@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, shallowRef, toRaw, computed, watch, onMounted } from "vue";
 import JSZip from "jszip";
 import { openUrl as openBrowser } from "@tauri-apps/plugin-opener";
 import { marked } from "marked";
@@ -107,7 +107,7 @@ const model = ref("flash");
 const showUpdateModal = ref(false);
 const latestReleaseData = ref<{ version: string; body: string; url: string; assets: any[] } | null>(null);
 const updatingStatus = ref("");
-const activeUpdateObject = ref<any>(null);
+const activeUpdateObject = shallowRef<any>(null);
 
 // File Metadata
 const currentFileName = ref("");
@@ -1058,7 +1058,7 @@ async function triggerUpdateInstall() {
   if (activeUpdateObject.value) {
     updatingStatus.value = "Güncelleme paketi arka planda indiriliyor ve kuruluyor. Lütfen bekleyin...";
     try {
-      await activeUpdateObject.value.downloadAndInstall();
+      await toRaw(activeUpdateObject.value).downloadAndInstall();
       updatingStatus.value = "Yükleme tamamlandı! Uygulama yeniden başlatılıyor...";
       setTimeout(async () => {
         showUpdateModal.value = false;
