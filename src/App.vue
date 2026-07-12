@@ -1065,13 +1065,13 @@ async function triggerUpdateInstall() {
         updatingStatus.value = "";
         await relaunch();
       }, 1500);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Otomatik güncelleme başarısız:", err);
-      updatingStatus.value = "Güncelleme yüklenemedi. Lütfen uygulamayı manuel güncelleyin.";
+      updatingStatus.value = `Güncelleme yüklenemedi: ${err?.message || err}. Lütfen manuel güncelleyin.`;
       setTimeout(() => {
         showUpdateModal.value = false;
         updatingStatus.value = "";
-      }, 2500);
+      }, 5000);
     }
   } else {
     showUpdateModal.value = false;
