@@ -2502,20 +2502,7 @@ onMounted(() => {
               </div>
 
 
-              <!-- Section D: Premium Account Hook Banner -->
-              <div class="premium-ad-card">
-                <div class="radial-glow"></div>
-                <div class="premium-card-body">
-                  <div class="premium-card-left">
-                    <div class="premium-tag-header">
-                      <span class="premium-tag">PREMIUM</span>
-                      <span class="premium-cta-title">VibeProject Hesabınızı Bağlayın</span>
-                    </div>
-                    <p class="premium-desc">GSC verilerinizi bulutta yedekleyin, sınırsız API sorgusu yapın ve ekibinizle ortak çalışma alanları kurun. Analizleriniz tüm cihazlarınızla anında senkronize edilsin.</p>
-                  </div>
-                  <button class="connect-account-btn">Hesabı Bağla →</button>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
