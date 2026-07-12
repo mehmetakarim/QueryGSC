@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#3a3733;border-radius:9px;border:2px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#4d4944;background-clip:content-box}
+  a{color:#ff6b5e;text-decoration:none}
+  a:hover{color:#ffb3ab}
+  input,button{font-family:inherit}
+  input:focus{outline:none}
+  @keyframes ql-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes ql-drawer{from{transform:translateX(100%)}to{transform:translateX(0)}}
+  @keyframes ql-spin{to{transform:rotate(360deg)}}
+</style>
+<template id="__bundler_thumbnail" data-bg-color="#1a1817">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#1a1817"/>
+    <rect x="360" y="240" width="480" height="320" rx="60" fill="#E1251A"/>
+    <path d="M480 470 V330 h140 l90 -110 100 100 130 -150" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</template>
+</helmet>
+<div style="{{ rootStyle }}">
+
+  <!-- SIDEBAR -->
+  <aside style="width:250px;flex:0 0 250px;height:100%;display:flex;flex-direction:column;background:#1f1d1b;border-right:1px solid rgba(60,57,53,0.7)">
+    <div style="height:60px;flex:0 0 60px;display:flex;align-items:center;gap:11px;padding:0 20px;border-bottom:1px solid rgba(60,57,53,0.7)">
+      <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#E1251A,#b01810);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(225,37,26,0.35)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>
+      </div>
+      <div>
+        <div style="font-family:Outfit,sans-serif;font-weight:700;font-size:16px;color:#f7f4f0;letter-spacing:-0.3px">QueryGSC</div>
+        <div style="font-size:10px;color:#7e776c;font-weight:500;letter-spacing:0.3px">SEO Analiz Motoru</div>
+      </div>
+    </div>
+
+    <nav style="flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:3px">
+      <div style="font-size:10px;font-weight:600;color:#5d564c;letter-spacing:1px;padding:8px 12px 6px">ÇALIŞMA ALANI</div>
+      <sc-for list="{{ nav }}" as="item" hint-placeholder-count="6">
+        <button onClick="{{ item.onClick }}" style="{{ item.style }}">
+          <span style="display:flex;width:19px;height:19px;color:{{ item.iconColor }}" data-icon="{{ item.icon }}"></span>
+          <span style="flex:1;text-align:left">{{ item.label }}</span>
+          <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;background:rgba(52,211,153,0.15);color:#34d399;letter-spacing:0.5px">{{ item.badge }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="padding:14px 12px;border-top:1px solid rgba(60,57,53,0.7)">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:rgba(225,37,26,0.06);border:1px solid rgba(225,37,26,0.15)">
+        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#b01810,#E1251A);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff">AY</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:600;color:#e9e4dd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Ada Yılmaz</div>
+          <div style="font-size:10.5px;color:#E1251A;font-weight:500">Premium Plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div style="flex:1;height:100%;display:flex;flex-direction:column;min-width:0">
+    <!-- topbar -->
+    <header style="height:60px;flex:0 0 60px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-bottom:1px solid rgba(60,57,53,0.7);background:rgba(10,14,26,0.6);backdrop-filter:blur(14px)">
+      <div>
+        <h1 style="font-family:Outfit,sans-serif;font-size:18px;font-weight:600;color:#f7f4f0;letter-spacing:-0.3px">{{ pageTitle }}</h1>
+        <div style="font-size:11.5px;color:#7e776c;margin-top:1px">{{ pageSub }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <sc-if value="{{ hasData }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:9px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2)">
+            <span style="width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399"></span>
+            <span style="font-size:11.5px;font-weight:500;color:#6ee7b7">query_data.csv · {{ rowCount }} satır</span>
+          </div>
+        </sc-if>
+        <button style="width:36px;height:36px;border-radius:9px;border:1px solid rgba(60,57,53,0.8);background:rgba(42,41,39,0.6);display:flex;align-items:center;justify-content:center;color:#a8a199;cursor:pointer">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- content -->
+    <main style="flex:1;overflow-y:auto;overflow-x:hidden;position:relative">
+      <div style="{{ contentKeyStyle }}" data-viewkey="{{ activeView }}">
+
+        <!-- ============ DASHBOARD ============ -->
+        <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:30px 34px;max-width:1180px;margin:0 auto">
+            <sc-if value="{{ !hasData }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:26px">
+                <div onClick="{{ simulateUpload }}" onDragOver="{{ prevent }}" onDrop="{{ simulateUpload }}" style="{{ dropZoneMain }}">
+                  <div style="width:56px;height:56px;border-radius:15px;background:linear-gradient(135deg,rgba(225,37,26,0.2),rgba(176,24,16,0.12));display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1px solid rgba(225,37,26,0.25)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff6b5e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div style="font-size:15px;font-weight:600;color:#e9e4dd;margin-bottom:6px">Güncel Dönem CSV'si</div>
+                  <div style="font-size:12.5px;color:#7e776c;line-height:1.5;text-align:center;max-width:230px">Google Search Console'dan indirdiğiniz dosyayı buraya sürükleyip bırakın</div>
+                  <div style="margin-top:16px;font-size:11px;font-weight:600;color:#E1251A;padding:7px 15px;border-radius:8px;border:1px solid rgba(225,37,26,0.3);background:rgba(225,37,26,0.08)">Dosya Seç</div>
+                </div>
+                <div onClick="{{ simulateUpload }}" onDragOver="{{ prevent }}" onDrop="{{ simulateUpload }}" style="{{ dropZoneAlt }}">
+                  <div style="width:56px;height:56px;border-radius:15px;background:rgba(60,57,53,0.5);display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1px dashed rgba(78,74,70,0.9)">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7e776c" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                  </div>
+                  <div style="font-size:15px;font-weight:600;color:#cdc7bd;margin-bottom:6px">Geçmiş Dönem CSV'si</div>
+                  <div style="font-size:12.5px;color:#7e776c;line-height:1.5;text-align:center;max-width:230px">İsteğe bağlı — karşılaştırma ve içerik eskimesi analizi için</div>
+                  <div style="margin-top:16px;font-size:11px;font-weight:600;color:#7e776c;padding:7px 15px;border-radius:8px;border:1px solid rgba(78,74,70,0.9)">Opsiyonel</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:12px;background:rgba(42,41,39,0.5);border:1px solid rgba(60,57,53,0.7)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E1251A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <span style="font-size:12.5px;color:#a8a199">Verileriniz tamamen yerel olarak işlenir — hiçbir dosya sunucuya yüklenmez.</span>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasData }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px">
+                <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                  <div style="{{ k.cardStyle }}">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                      <span style="width:38px;height:38px;border-radius:10px;background:{{ k.iconBg }};display:flex;align-items:center;justify-content:center;color:{{ k.iconColor }}" data-icon="{{ k.icon }}"></span>
+                      <span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:7px;background:{{ k.trendBg }};color:{{ k.trendColor }}">{{ k.trend }}</span>
+                    </div>
+                    <div style="font-family:Outfit,sans-serif;font-size:26px;font-weight:700;color:#f7f4f0;letter-spacing:-0.5px">{{ k.value }}</div>
+                    <div style="font-size:12px;color:#7e776c;margin-top:3px">{{ k.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px">
+                <div style="padding:22px;border-radius:16px;background:rgba(42,41,39,0.5);border:1px solid rgba(60,57,53,0.7)">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                    <div style="font-size:14px;font-weight:600;color:#e9e4dd">Tıklama Eğilimi · Son 28 Gün</div>
+                    <div style="font-size:11px;color:#7e776c;font-weight:500;padding:4px 9px;border-radius:7px;border:1px solid rgba(60,57,53,0.8)">Günlük</div>
+                  </div>
+                  <div style="height:190px;display:flex;align-items:flex-end;gap:5px">
+                    <sc-for list="{{ chartBars }}" as="b" hint-placeholder-count="28">
+                      <div style="flex:1;height:{{ b.h }};border-radius:4px 4px 2px 2px;background:{{ b.color }};transition:all .3s"></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="padding:22px;border-radius:16px;background:rgba(42,41,39,0.5);border:1px solid rgba(60,57,53,0.7)">
+                  <div style="font-size:14px;font-weight:600;color:#e9e4dd;margin-bottom:18px">Fırsat Dağılımı</div>
+                  <div style="display:flex;flex-direction:column;gap:15px">
+                    <sc-for list="{{ oppDist }}" as="o" hint-placeholder-count="3">
+                      <div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                          <span style="font-size:12.5px;color:#cdc7bd;font-weight:500">{{ o.label }}</span>
+                          <span style="font-size:12.5px;color:#a8a199;font-weight:600">{{ o.count }}</span>
+                        </div>
+                        <div style="height:7px;border-radius:4px;background:rgba(60,57,53,0.8);overflow:hidden">
+                          <div style="height:100%;width:{{ o.pct }};background:{{ o.color }};border-radius:4px"></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <button onClick="{{ goExplorer }}" style="margin-top:22px;width:100%;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#E1251A,#b01810);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(225,37,26,0.3)">Tüm Fırsatları Gör →</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- ============ OPPORTUNITY EXPLORER ============ -->
+        <sc-if value="{{ isExplorer }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:24px 34px;display:flex;flex-direction:column;height:100%">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+              <div style="flex:1;position:relative;display:flex;align-items:center">
+                <span style="position:absolute;left:13px;display:flex;color:#7e776c"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                <input value="{{ search }}" onInput="{{ onSearch }}" placeholder="Sorgu veya sayfa ara..." style="width:100%;padding:11px 13px 11px 38px;border-radius:11px;background:rgba(42,41,39,0.6);border:1px solid rgba(60,57,53,0.8);color:#e9e4dd;font-size:13px" />
+              </div>
+              <div style="display:flex;gap:7px">
+                <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+                  <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="flex:1;border-radius:16px;background:rgba(42,41,39,0.4);border:1px solid rgba(60,57,53,0.7);overflow:hidden;display:flex;flex-direction:column;min-height:0">
+              <div style="overflow:auto;flex:1">
+                <table style="width:100%;border-collapse:collapse;min-width:960px">
+                  <thead>
+                    <tr style="position:sticky;top:0;background:#242220;z-index:2">
+                      <sc-for list="{{ cols }}" as="c" hint-placeholder-count="7">
+                        <th style="{{ c.style }}">{{ c.label }}</th>
+                      </sc-for>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+                      <tr onClick="{{ r.onClick }}" style="{{ r.rowStyle }}">
+                        <td style="padding:13px 16px"><span style="{{ r.typeStyle }}">{{ r.type }}</span></td>
+                        <td style="padding:13px 16px;font-size:13px;color:#e9e4dd;font-weight:500;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.query }}</td>
+                        <td style="padding:13px 16px;font-size:12px;color:#7e776c;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.page }}</td>
+                        <td style="padding:13px 16px;font-size:13px;color:#cdc7bd;text-align:right">{{ r.impr }}</td>
+                        <td style="padding:13px 16px;font-size:13px;color:#cdc7bd;text-align:right">{{ r.clicks }}</td>
+                        <td style="padding:13px 16px;font-size:13px;color:#cdc7bd;text-align:right">{{ r.ctr }}</td>
+                        <td style="padding:13px 16px;text-align:right"><span style="font-size:13px;font-weight:600;color:#34d399">{{ r.gain }}</span></td>
+                        <td style="padding:13px 16px;text-align:center"><span style="{{ r.prioStyle }}">{{ r.prio }}</span></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+              <div style="flex:0 0 auto;padding:11px 18px;border-top:1px solid rgba(60,57,53,0.7);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#7e776c">
+                <span>{{ rowCountLabel }}</span>
+                <span>Öncelik skoruna göre sıralandı</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DRAWER -->
+          <sc-if value="{{ drawer }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ closeDrawer }}" style="position:absolute;inset:0;background:rgba(20,18,17,0.6);backdrop-filter:blur(2px);z-index:20"></div>
+            <div style="position:absolute;top:0;right:0;bottom:0;width:440px;background:#211f1d;border-left:1px solid rgba(60,57,53,0.9);z-index:21;overflow-y:auto;animation:ql-drawer .28s cubic-bezier(.16,1,.3,1);box-shadow:-20px 0 50px rgba(0,0,0,0.4)">
+              <div style="padding:24px 26px;border-bottom:1px solid rgba(60,57,53,0.7);display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
+                <div>
+                  <span style="{{ drawer.typeStyle }}">{{ drawer.type }}</span>
+                  <div style="font-size:17px;font-weight:600;color:#f7f4f0;margin-top:11px;line-height:1.35">{{ drawer.query }}</div>
+                  <div style="font-size:12px;color:#7e776c;margin-top:5px">{{ drawer.page }}</div>
+                </div>
+                <button onClick="{{ closeDrawer }}" style="width:32px;height:32px;flex:0 0 32px;border-radius:8px;border:1px solid rgba(60,57,53,0.8);background:rgba(42,41,39,0.6);color:#a8a199;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              </div>
+
+              <div style="padding:24px 26px;display:flex;flex-direction:column;gap:22px">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                  <div style="padding:13px;border-radius:11px;background:rgba(42,41,39,0.6);border:1px solid rgba(60,57,53,0.7)"><div style="font-size:19px;font-weight:700;color:#e9e4dd;font-family:Outfit">{{ drawer.impr }}</div><div style="font-size:10.5px;color:#7e776c;margin-top:2px">Gösterim</div></div>
+                  <div style="padding:13px;border-radius:11px;background:rgba(42,41,39,0.6);border:1px solid rgba(60,57,53,0.7)"><div style="font-size:19px;font-weight:700;color:#e9e4dd;font-family:Outfit">{{ drawer.ctr }}</div><div style="font-size:10.5px;color:#7e776c;margin-top:2px">CTR</div></div>
+                  <div style="padding:13px;border-radius:11px;background:rgba(225,37,26,0.08);border:1px solid rgba(225,37,26,0.2)"><div style="font-size:19px;font-weight:700;color:#ff6b5e;font-family:Outfit">{{ drawer.pos }}</div><div style="font-size:10.5px;color:#7e776c;margin-top:2px">Pozisyon</div></div>
+                </div>
+
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E1251A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    <span style="font-size:13.5px;font-weight:600;color:#e9e4dd">Neden Önemli?</span>
+                  </div>
+                  <p style="font-size:13px;color:#a8a199;line-height:1.65">{{ drawer.why }}</p>
+                </div>
+
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    <span style="font-size:13.5px;font-weight:600;color:#e9e4dd">Önerilen Eylem</span>
+                  </div>
+                  <div style="padding:15px 16px;border-radius:12px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18)">
+                    <p style="font-size:13px;color:#a7f3d0;line-height:1.6;font-weight:500">{{ drawer.action }}</p>
+                  </div>
+                </div>
+
+                <div style="padding:15px 16px;border-radius:12px;background:linear-gradient(135deg,rgba(225,37,26,0.1),rgba(176,24,16,0.05));border:1px solid rgba(225,37,26,0.2)">
+                  <div style="font-size:11px;color:#a8a199;margin-bottom:6px">Tahmini kazanç uygulandığında</div>
+                  <div style="font-size:22px;font-weight:700;color:#34d399;font-family:Outfit">+{{ drawer.gain }} tıklama/ay</div>
+                </div>
+
+                <button onClick="{{ goAI }}" style="width:100%;padding:13px;border-radius:11px;border:1px solid rgba(225,37,26,0.3);background:rgba(225,37,26,0.1);color:#ffb3ab;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg>
+                  Yapay Zeka ile Derinlemesine Analiz Et
+                </button>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <!-- ============ CANNIBALIZATION ============ -->
+        <sc-if value="{{ isCannibal }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 34px;max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:14px;background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.18)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              <div><div style="font-size:13.5px;font-weight:600;color:#fdba74">3 sorgu için yamyamlık tespit edildi</div><div style="font-size:12px;color:#a8a199;margin-top:2px">Aynı sorgu için birden fazla sayfanız rekabet ediyor — bu, sıralama gücünüzü böler.</div></div>
+            </div>
+            <sc-for list="{{ cannibalGroups }}" as="g" hint-placeholder-count="3">
+              <div style="border-radius:16px;background:rgba(42,41,39,0.4);border:1px solid rgba(60,57,53,0.7);overflow:hidden">
+                <div style="padding:16px 20px;border-bottom:1px solid rgba(60,57,53,0.7);display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:11px">
+                    <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;background:rgba(251,146,60,0.15);color:#fb923c">{{ g.count }} SAYFA</span>
+                    <span style="font-size:14px;font-weight:600;color:#e9e4dd">"{{ g.query }}"</span>
+                  </div>
+                  <span style="font-size:12px;color:#7e776c">{{ g.totalImpr }} toplam gösterim</span>
+                </div>
+                <div>
+                  <sc-for list="{{ g.pages }}" as="p" hint-placeholder-count="2">
+                    <div style="{{ p.rowStyle }}">
+                      <span style="width:8px;height:8px;border-radius:50%;background:{{ p.dot }};flex:0 0 8px"></span>
+                      <span style="flex:1;font-size:12.5px;color:#cdc7bd;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.url }}</span>
+                      <span style="font-size:12px;color:#7e776c;width:90px;text-align:right">Poz. {{ p.pos }}</span>
+                      <span style="font-size:12px;color:#7e776c;width:90px;text-align:right">{{ p.clicks }} tık</span>
+                      <span style="{{ p.tagStyle }}">{{ p.tag }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ CONTENT DECAY ============ -->
+        <sc-if value="{{ isDecay }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 34px;max-width:1120px;margin:0 auto">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px">
+              <div style="padding:18px 20px;border-radius:14px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.18)"><div style="font-size:24px;font-weight:700;color:#f87171;font-family:Outfit">-18.4%</div><div style="font-size:12px;color:#a8a199;margin-top:3px">Düşüşteki sayfalar (ort.)</div></div>
+              <div style="padding:18px 20px;border-radius:14px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18)"><div style="font-size:24px;font-weight:700;color:#34d399;font-family:Outfit">+31.2%</div><div style="font-size:12px;color:#a8a199;margin-top:3px">Yükselişteki sayfalar (ort.)</div></div>
+              <div style="padding:18px 20px;border-radius:14px;background:rgba(42,41,39,0.5);border:1px solid rgba(60,57,53,0.7)"><div style="font-size:24px;font-weight:700;color:#e9e4dd;font-family:Outfit">12</div><div style="font-size:12px;color:#a8a199;margin-top:3px">Acil müdahale gereken</div></div>
+            </div>
+            <div style="border-radius:16px;background:rgba(42,41,39,0.4);border:1px solid rgba(60,57,53,0.7);overflow:hidden">
+              <div style="overflow-x:auto">
+                <table style="width:100%;border-collapse:collapse;min-width:820px">
+                  <thead><tr style="background:#242220">
+                    <th style="padding:12px 18px;text-align:left;font-size:11px;font-weight:600;color:#7e776c;letter-spacing:0.5px">SORGU / SAYFA</th>
+                    <th style="padding:12px 18px;text-align:right;font-size:11px;font-weight:600;color:#7e776c">GEÇMİŞ TIK</th>
+                    <th style="padding:12px 18px;text-align:right;font-size:11px;font-weight:600;color:#7e776c">GÜNCEL TIK</th>
+                    <th style="padding:12px 18px;text-align:right;font-size:11px;font-weight:600;color:#7e776c">DEĞİŞİM</th>
+                    <th style="padding:12px 18px;text-align:right;font-size:11px;font-weight:600;color:#7e776c">POZ. FARKI</th>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{ decayRows }}" as="d" hint-placeholder-count="8">
+                      <tr style="border-top:1px solid rgba(60,57,53,0.5)">
+                        <td style="padding:13px 18px"><div style="font-size:13px;color:#e9e4dd;font-weight:500">{{ d.query }}</div><div style="font-size:11px;color:#7e776c;margin-top:2px">{{ d.page }}</div></td>
+                        <td style="padding:13px 18px;text-align:right;font-size:13px;color:#a8a199">{{ d.prev }}</td>
+                        <td style="padding:13px 18px;text-align:right;font-size:13px;color:#e9e4dd;font-weight:500">{{ d.curr }}</td>
+                        <td style="padding:13px 18px;text-align:right"><span style="{{ d.changeStyle }}">{{ d.change }}</span></td>
+                        <td style="padding:13px 18px;text-align:right;font-size:12.5px;color:{{ d.posColor }}">{{ d.posDiff }}</td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ GEMINI AI ============ -->
+        <sc-if value="{{ isAI }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ !geminiOn }}" hint-placeholder-val="{{ true }}">
+            <div style="height:100%;display:flex;align-items:center;justify-content:center;padding:34px">
+              <div style="max-width:420px;text-align:center;display:flex;flex-direction:column;align-items:center">
+                <div style="width:66px;height:66px;border-radius:18px;background:linear-gradient(135deg,rgba(225,37,26,0.2),rgba(176,24,16,0.1));display:flex;align-items:center;justify-content:center;border:1px solid rgba(225,37,26,0.25);margin-bottom:20px">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ff6b5e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg>
+                </div>
+                <div style="font-size:18px;font-weight:600;color:#f7f4f0;margin-bottom:9px">Yapay Zeka Asistanı Pasif</div>
+                <p style="font-size:13px;color:#a8a199;line-height:1.6;margin-bottom:22px">Gemini destekli akıllı SEO raporları oluşturmak için önce Ayarlar bölümünden Gemini API'yi etkinleştirin.</p>
+                <button onClick="{{ goSettings }}" style="padding:12px 22px;border-radius:11px;border:none;background:linear-gradient(135deg,#E1251A,#b01810);color:#fff;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(225,37,26,0.3)">Ayarlar'a Git</button>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ geminiOn }}" hint-placeholder-val="{{ false }}">
+            <div style="height:100%;display:flex;flex-direction:column;max-width:820px;margin:0 auto;width:100%">
+              <div style="flex:1;overflow-y:auto;padding:28px 30px;display:flex;flex-direction:column;gap:20px">
+                <sc-for list="{{ chat }}" as="m" hint-placeholder-count="3">
+                  <div style="{{ m.wrap }}">
+                    <sc-if value="{{ m.isAI }}" hint-placeholder-val="{{ false }}">
+                      <div style="width:32px;height:32px;flex:0 0 32px;border-radius:9px;background:linear-gradient(135deg,#E1251A,#b01810);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg></div>
+                    </sc-if>
+                    <div style="{{ m.bubble }}">{{ m.text }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="flex:0 0 auto;padding:16px 30px 24px;border-top:1px solid rgba(60,57,53,0.7)">
+                <div style="display:flex;gap:10px;align-items:flex-end">
+                  <div style="flex:1;position:relative">
+                    <input value="{{ prompt }}" onInput="{{ onPrompt }}" onKeyDown="{{ onPromptKey }}" placeholder="Seçili sorgu grubu hakkında bir soru sorun..." style="width:100%;padding:13px 16px;border-radius:13px;background:rgba(42,41,39,0.7);border:1px solid rgba(60,57,53,0.9);color:#e9e4dd;font-size:13px" />
+                  </div>
+                  <button onClick="{{ sendPrompt }}" style="width:46px;height:46px;flex:0 0 46px;border-radius:13px;border:none;background:linear-gradient(135deg,#E1251A,#b01810);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(225,37,26,0.3)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg></button>
+                </div>
+                <div style="font-size:10.5px;color:#5d564c;margin-top:9px;text-align:center">Gemini 1.5 Pro · Yanıtlar mock verilere dayalı simülasyondur</div>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <!-- ============ SETTINGS ============ -->
+        <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 34px;max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px">
+
+            <div style="border-radius:16px;background:rgba(42,41,39,0.4);border:1px solid rgba(60,57,53,0.7);padding:24px 26px">
+              <div style="font-size:14px;font-weight:600;color:#e9e4dd;margin-bottom:4px">Dosya Analiz Parametreleri</div>
+              <div style="font-size:12px;color:#7e776c;margin-bottom:22px">Fırsat tespit motorunun nasıl çalışacağını ayarlayın</div>
+              <div style="margin-bottom:26px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:13px;color:#cdc7bd;font-weight:500">Minimum Gösterim Filtresi</span><span style="font-size:13px;font-weight:600;color:#ff6b5e">{{ minImpr }}</span></div>
+                <input type="range" min="0" max="1000" step="50" value="{{ minImpr }}" onInput="{{ onMinImpr }}" style="width:100%;accent-color:#E1251A" />
+                <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:#5d564c"><span>0</span><span>1000</span></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:13px;color:#cdc7bd;font-weight:500">Striking-Distance Pozisyon Aralığı</span><span style="font-size:13px;font-weight:600;color:#ff6b5e">{{ sdLow }} – {{ sdHigh }}</span></div>
+                <div style="display:flex;gap:16px">
+                  <div style="flex:1"><div style="font-size:11px;color:#7e776c;margin-bottom:6px">Alt sınır</div><input type="range" min="1" max="10" step="1" value="{{ sdLow }}" onInput="{{ onSdLow }}" style="width:100%;accent-color:#E1251A" /></div>
+                  <div style="flex:1"><div style="font-size:11px;color:#7e776c;margin-bottom:6px">Üst sınır</div><input type="range" min="10" max="30" step="1" value="{{ sdHigh }}" onInput="{{ onSdHigh }}" style="width:100%;accent-color:#E1251A" /></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-radius:16px;background:rgba(42,41,39,0.4);border:1px solid rgba(60,57,53,0.7);padding:24px 26px">
+              <div style="font-size:14px;font-weight:600;color:#e9e4dd;margin-bottom:4px">API Entegrasyonları</div>
+              <div style="font-size:12px;color:#7e776c;margin-bottom:22px">Harici servisleri bağlayarak yeteneklerinizi genişletin</div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(60,57,53,0.6)">
+                <div style="display:flex;align-items:center;gap:13px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.25);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+                  <div><div style="font-size:13.5px;font-weight:600;color:#e9e4dd">Google Search Console</div><div style="font-size:11.5px;color:{{ gscColor }}">{{ gscStatus }}</div></div>
+                </div>
+                <button onClick="{{ toggleGsc }}" style="{{ gscBtn }}">{{ gscBtnLabel }}</button>
+              </div>
+
+              <div style="padding:18px 0 4px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                  <div style="display:flex;align-items:center;gap:13px">
+                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(225,37,26,0.12);border:1px solid rgba(225,37,26,0.25);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b5e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg></div>
+                    <div><div style="font-size:13.5px;font-weight:600;color:#e9e4dd">Gemini API</div><div style="font-size:11.5px;color:{{ geminiColor }}">{{ geminiStatus }}</div></div>
+                  </div>
+                  <button onClick="{{ toggleGemini }}" role="switch" style="{{ geminiSwitch }}"><span style="{{ geminiKnob }}"></span></button>
+                </div>
+                <sc-if value="{{ geminiOn }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px;padding-left:53px">
+                    <div><div style="font-size:11.5px;color:#7e776c;margin-bottom:6px">API Anahtarı</div><input value="{{ apiKey }}" onInput="{{ onApiKey }}" placeholder="AIza..." style="width:100%;padding:10px 13px;border-radius:10px;background:rgba(20,18,17,0.6);border:1px solid rgba(60,57,53,0.9);color:#e9e4dd;font-size:12.5px;font-family:monospace" /></div>
+                    <div><div style="font-size:11.5px;color:#7e776c;margin-bottom:6px">Model Seçimi</div>
+                      <div style="display:flex;gap:8px">
+                        <sc-for list="{{ models }}" as="md" hint-placeholder-count="3"><button onClick="{{ md.onClick }}" style="{{ md.style }}">{{ md.label }}</button></sc-for>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+
+            <div style="border-radius:16px;background:linear-gradient(135deg,rgba(225,37,26,0.12),rgba(176,24,16,0.05));border:1px solid rgba(225,37,26,0.25);padding:26px;position:relative;overflow:hidden">
+              <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(225,37,26,0.25),transparent 70%)"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative">
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+                    <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:linear-gradient(135deg,#E1251A,#b01810);color:#fff;letter-spacing:0.5px">PREMIUM</span>
+                    <span style="font-size:15px;font-weight:600;color:#f7f4f0;font-family:Outfit">VibeProject Hesabınızı Bağlayın</span>
+                  </div>
+                  <p style="font-size:12.5px;color:#a8a199;line-height:1.6;max-width:440px">Bulut senkronizasyonu, sınırsız AI raporu ve ekip iş birliği özelliklerinin kilidini açın. Analizleriniz tüm cihazlarınızda hazır olsun.</p>
+                </div>
+                <button style="flex:0 0 auto;padding:13px 22px;border-radius:12px;border:none;background:linear-gradient(135deg,#E1251A,#b01810);color:#fff;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(225,37,26,0.35);white-space:nowrap">Hesabı Bağla →</button>
+              </div>
+            </div>
+
+          </div>
+        </sc-if>
+
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#E1251A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Görünüm&quot;,&quot;options&quot;:[&quot;#E1251A&quot;,&quot;#34d399&quot;,&quot;#60a5fa&quot;,&quot;#f472b6&quot;]}}">
+class Component extends DCLogic {
+  state = {
+    activeView: 'dashboard',
+    hasData: false,
+    uploading: false,
+    search: '',
+    filter: 'all',
+    drawer: null,
+    geminiOn: false,
+    gscConnected: false,
+    minImpr: 100,
+    sdLow: 4,
+    sdHigh: 20,
+    apiKey: '',
+    model: 'flash',
+    prompt: '',
+    chat: [
+      { role: 'ai', text: 'Merhaba! "içerik pazarlama araçları" sorgu grubunu analiz ettim. Bu grup son 28 günde 14.200 gösterim aldı ancak ortalama CTR yalnızca %2,1 — sektör ortalamasının oldukça altında.' },
+      { role: 'user', text: 'CTR\'yi nasıl artırabilirim?' },
+      { role: 'ai', text: 'Üç somut öneri: (1) Başlık etiketine sayısal bir vaat ekleyin ("2026\'nın en iyi 12 aracı"). (2) Meta açıklamayı 155 karaktere yeniden yazıp bir eylem çağrısı ekleyin. (3) FAQ şeması işaretlemesi ile zengin sonuç (rich snippet) elde edin. Tahmini kazanç: aylık +310 tıklama.' }
+    ]
+  };
+
+  nav_items = [
+    { id:'dashboard', label:'Panel & Veri Girişi', icon:'grid' },
+    { id:'explorer', label:'Fırsat Kaşifi', icon:'target' },
+    { id:'cannibal', label:'Yamyamlık Denetçisi', icon:'split' },
+    { id:'decay', label:'İçerik Eskimesi', icon:'trend' },
+    { id:'ai', label:'Yapay Zeka Asistanı', icon:'spark', badge:'AI' },
+    { id:'settings', label:'Ayarlar', icon:'gear' },
+  ];
+
+  titles = {
+    dashboard:['Panel','Verilerinizi yükleyin ve genel görünümü inceleyin'],
+    explorer:['Fırsat Kaşifi','Önceliklendirilmiş SEO fırsatlarınız'],
+    cannibal:['Yamyamlık Denetçisi','Birbiriyle rekabet eden sayfalarınız'],
+    decay:['İçerik Eskimesi','Dönemsel performans değişimleri'],
+    ai:['Yapay Zeka Asistanı','Gemini destekli akıllı SEO raporları'],
+    settings:['Ayarlar','Analiz parametreleri ve entegrasyonlar'],
+  };
+
+  allRows = [
+    { type:'Striking Distance', query:'içerik pazarlama araçları', page:'/blog/icerik-araclari', impr:14200, clicks:298, ctr:2.1, pos:11.4, gain:640, prio:'high', why:'Bu sorgu 11. pozisyonda — 2. sayfanın hemen başında. İlk 5\'e taşınırsa tıklama oranı 3-4 katına çıkabilir. Zaten yüksek gösterim aldığı için düşük çabayla yüksek getiri sağlar.', action:'Sayfaya "2026 güncel" ifadesini ve 3 yeni araç ekleyin. Ardından yüksek otoriteli /rehber sayfanızdan bu sayfaya alakalı anchor metniyle iç link verin.' },
+    { type:'Low CTR', query:'seo denetimi nasıl yapılır', page:'/rehber/seo-denetimi', impr:9800, clicks:88, ctr:0.9, pos:4.2, gain:420, prio:'high', why:'4. pozisyonda olmasına rağmen CTR yalnızca %0,9. Bu, başlık ve açıklamanızın tıklamayı teşvik etmediğini gösterir. Sıralama iyi ama sunum zayıf.', action:'FAQ şeması ekleyin ve başlığı soru formatına çevirin. Meta açıklamaya adım sayısı ve süre bilgisi ("7 adımda, 15 dk") ekleyin.' },
+    { type:'Internal Link', query:'anahtar kelime araştırması', page:'/blog/kelime-arastirmasi', impr:6400, clicks:210, ctr:3.3, pos:8.1, gain:280, prio:'medium', why:'Güçlü bir sayfa ama iç link desteği zayıf. Sitenizin en çok bağlantı alan 3 sayfasından hiçbiri buraya link vermiyor.', action:'/seo-rehberi ve /baslangic sayfalarından bu içeriğe "anahtar kelime araştırması" anchor metniyle iç link ekleyin.' },
+    { type:'Striking Distance', query:'backlink analizi', page:'/arac/backlink', impr:5100, clicks:142, ctr:2.8, pos:12.7, gain:230, prio:'medium', why:'12. pozisyon — biraz destekle ilk sayfaya taşınabilir. Rakip analizinde bu sorgu için içerik boşluğu tespit edildi.', action:'İçeriğe karşılaştırma tablosu ve güncel istatistikler ekleyip kelime sayısını 800\'den 1500\'e çıkarın.' },
+    { type:'Low CTR', query:'ücretsiz seo araçları', page:'/liste/ucretsiz-araclar', impr:11300, clicks:135, ctr:1.2, pos:6.8, gain:390, prio:'high', why:'Yüksek gösterim, düşük CTR. "Ücretsiz" arayan kullanıcılar için başlık yeterince cazip değil.', action:'Başlığa araç sayısını ve "kayıt gerektirmez" ifadesini ekleyin. Liste öğelerini yıldız derecelendirmesiyle zenginleştirin.' },
+    { type:'Internal Link', query:'site hızı optimizasyonu', page:'/rehber/site-hizi', impr:4200, clicks:96, ctr:2.3, pos:9.4, gain:180, prio:'low', why:'Orta seviye bir fırsat. Teknik SEO kümesindeki diğer sayfalarla bağlantısı kopuk.', action:'Teknik SEO küme sayfanızdan (pillar page) bu içeriğe kontekstüel iç link ekleyin.' },
+    { type:'Striking Distance', query:'schema markup örnekleri', page:'/blog/schema-ornekleri', impr:3800, clicks:71, ctr:1.9, pos:13.2, gain:160, prio:'low', why:'13. pozisyonda, geliştirme potansiyeli var. Kod örnekleri arayan kullanıcılar için değerli.', action:'Kopyalanabilir kod blokları ve her şema tipi için canlı örnek ekleyin.' },
+    { type:'Low CTR', query:'google analytics kurulumu', page:'/rehber/ga4-kurulum', impr:7600, clicks:152, ctr:2.0, pos:5.1, gain:250, prio:'medium', why:'5. pozisyonda ancak CTR düşük. GA4 geçişiyle arama hacmi arttı, fırsat büyüyor.', action:'Başlığa "GA4" ve "2026" ekleyin, ekran görüntülü adım adım rehber vurgusu yapın.' },
+  ];
+
+  cannibal_data = [
+    { query:'seo aracı', totalImpr:'21.400', pages:[
+      { url:'/arac/seo-analiz', pos:4, clicks:180, tag:'Ana', primary:true },
+      { url:'/blog/en-iyi-seo-araclari', pos:7, clicks:95, tag:'Rakip', primary:false },
+      { url:'/liste/seo-araclari-2026', pos:11, clicks:34, tag:'Rakip', primary:false },
+    ]},
+    { query:'anahtar kelime bulma', totalImpr:'13.800', pages:[
+      { url:'/arac/kelime-bulucu', pos:5, clicks:120, tag:'Ana', primary:true },
+      { url:'/blog/kelime-nasil-bulunur', pos:9, clicks:62, tag:'Rakip', primary:false },
+    ]},
+    { query:'içerik planlama', totalImpr:'8.900', pages:[
+      { url:'/rehber/icerik-plani', pos:6, clicks:88, tag:'Ana', primary:true },
+      { url:'/sablon/icerik-takvimi', pos:8, clicks:54, tag:'Rakip', primary:false },
+      { url:'/blog/icerik-stratejisi', pos:14, clicks:19, tag:'Rakip', primary:false },
+    ]},
+  ];
+
+  decay_data = [
+    { query:'seo nedir', page:'/rehber/seo-nedir', prev:1240, curr:820, posDiff:'▼ 3.2', up:false },
+    { query:'meta açıklama', page:'/blog/meta-aciklama', prev:680, curr:512, posDiff:'▼ 1.8', up:false },
+    { query:'sitemap oluşturma', page:'/rehber/sitemap', prev:420, curr:290, posDiff:'▼ 2.5', up:false },
+    { query:'core web vitals', page:'/blog/web-vitals', prev:310, curr:540, posDiff:'▲ 4.1', up:true },
+    { query:'robots.txt', page:'/rehber/robots-txt', prev:520, curr:380, posDiff:'▼ 1.2', up:false },
+    { query:'e-e-a-t nedir', page:'/blog/eeat', prev:180, curr:410, posDiff:'▲ 6.3', up:true },
+    { query:'canonical etiket', page:'/rehber/canonical', prev:290, curr:198, posDiff:'▼ 2.1', up:false },
+    { query:'yapay zeka seo', page:'/blog/ai-seo', prev:95, curr:380, posDiff:'▲ 9.7', up:true },
+  ];
+
+  renderVals() {
+    const s = this.state;
+    const set = (k,v)=>this.setState({[k]:v});
+    const accent = this.props.accent || '#E1251A';
+
+    const nav = this.nav_items.map(it => {
+      const active = s.activeView === it.id;
+      return {
+        label: it.label, icon: it.icon, badge: it.badge || false,
+        iconColor: active ? '#ffb3ab' : '#7e776c',
+        onClick: () => this.setState({ activeView: it.id, drawer: null }),
+        style: `display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:${active?600:500};text-align:left;transition:all .18s;background:${active?'rgba(225,37,26,0.12)':'transparent'};color:${active?'#e9e4dd':'#a8a199'}`,
+      };
+    });
+
+    const [pageTitle, pageSub] = this.titles[s.activeView] || ['',''];
+
+    // KPIs
+    const kpis = [
+      { label:'Toplam Gösterim', value:'847.2K', trend:'+12.4%', icon:'eye', up:true },
+      { label:'Toplam Tıklama', value:'23.8K', trend:'+8.1%', icon:'click', up:true },
+      { label:'Ortalama CTR', value:'%2.81', trend:'-0.3%', icon:'percent', up:false },
+      { label:'Ortalama Pozisyon', value:'14.2', trend:'+2.1', icon:'rank', up:true },
+    ].map(k => ({
+      ...k,
+      cardStyle:'padding:20px;border-radius:16px;background:rgba(42,41,39,0.5);border:1px solid rgba(60,57,53,0.7)',
+      iconBg: k.up ? 'rgba(52,211,153,0.12)' : 'rgba(225,37,26,0.12)',
+      iconColor: k.up ? '#34d399' : '#ff6b5e',
+      trendBg: k.up ? 'rgba(52,211,153,0.12)' : 'rgba(239,68,68,0.12)',
+      trendColor: k.up ? '#34d399' : '#f87171',
+    }));
+
+    const chartBars = Array.from({length:28}, (_,i) => {
+      const base = 40 + Math.sin(i*0.6)*22 + (i>20?i-20:0)*3 + (i%4===0?12:0);
+      const h = Math.max(18, Math.min(95, base + (i%3)*6));
+      return { h: h+'%', color: i>=25 ? accent : 'rgba(225,37,26,0.35)' };
+    });
+
+    const oppDist = [
+      { label:'Striking Distance', count:34, pct:'72%', color:'#E1251A' },
+      { label:'Low CTR', count:21, pct:'45%', color:'#34d399' },
+      { label:'Internal Link', count:12, pct:'26%', color:'#f59e0b' },
+    ];
+
+    // Explorer table
+    const typeStyleMap = {
+      'Striking Distance':'background:rgba(225,37,26,0.15);color:#ffb3ab',
+      'Low CTR':'background:rgba(52,211,153,0.13);color:#6ee7b7',
+      'Internal Link':'background:rgba(245,158,11,0.14);color:#fcd34d',
+    };
+    const badge = (t)=>`font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:7px;white-space:nowrap;${typeStyleMap[t]||''}`;
+    const prioMap = {
+      high:'background:rgba(239,68,68,0.14);color:#fca5a5',
+      medium:'background:rgba(251,146,60,0.14);color:#fdba74',
+      low:'background:rgba(126,119,108,0.18);color:#a8a199',
+    };
+    const prioLabel = { high:'Yüksek', medium:'Orta', low:'Düşük' };
+    const prioBadge = (p)=>`font-size:10.5px;font-weight:600;padding:4px 10px;border-radius:20px;${prioMap[p]}`;
+
+    const q = s.search.trim().toLowerCase();
+    const filtered = this.allRows.filter(r => {
+      const mf = s.filter==='all' || r.type===s.filter;
+      const mq = !q || r.query.toLowerCase().includes(q) || r.page.toLowerCase().includes(q);
+      return mf && mq;
+    });
+    const fmt = n => n.toLocaleString('tr-TR');
+
+    const rows = filtered.map((r,i) => ({
+      type:r.type, query:r.query, page:r.page,
+      impr:fmt(r.impr), clicks:fmt(r.clicks), ctr:'%'+r.ctr.toFixed(1),
+      gain:'+'+fmt(r.gain), prio:prioLabel[r.prio],
+      typeStyle:badge(r.type), prioStyle:prioBadge(r.prio),
+      rowStyle:`border-top:1px solid rgba(60,57,53,0.5);cursor:pointer;transition:background .15s;background:${s.drawer&&s.drawer._q===r.query?'rgba(225,37,26,0.06)':'transparent'}`,
+      onClick:()=>this.setState({ drawer:{ ...r, _q:r.query, ctr:'%'+r.ctr.toFixed(1), pos:r.pos.toFixed(1), impr:fmt(r.impr), gain:fmt(r.gain), typeStyle:badge(r.type) } }),
+    }));
+
+    const cols = [
+      {label:'FIRSAT TİPİ',a:'left'},{label:'SORGU',a:'left'},{label:'HEDEF SAYFA',a:'left'},
+      {label:'GÖSTERİM',a:'right'},{label:'TIKLAMA',a:'right'},{label:'CTR',a:'right'},
+      {label:'POT. KAZANÇ',a:'right'},{label:'ÖNCELİK',a:'center'},
+    ].map(c=>({label:c.label,style:`padding:12px 16px;text-align:${c.a};font-size:10.5px;font-weight:600;color:#7e776c;letter-spacing:0.5px;border-bottom:1px solid rgba(60,57,53,0.7);white-space:nowrap`}));
+
+    const filterOpts = [['all','Tümü'],['Striking Distance','Striking Distance'],['Low CTR','Low CTR'],['Internal Link','Internal Link']];
+    const filters = filterOpts.map(([id,label])=>{
+      const active = s.filter===id;
+      return { label, onClick:()=>set('filter',id),
+        style:`padding:9px 14px;border-radius:10px;font-size:12px;font-weight:${active?600:500};cursor:pointer;white-space:nowrap;transition:all .15s;border:1px solid ${active?'rgba(225,37,26,0.4)':'rgba(60,57,53,0.8)'};background:${active?'rgba(225,37,26,0.12)':'rgba(42,41,39,0.5)'};color:${active?'#ffb3ab':'#a8a199'}` };
+    });
+
+    // Cannibalization
+    const cannibalGroups = this.cannibal_data.map(g => ({
+      query:g.query, totalImpr:g.totalImpr, count:g.pages.length,
+      pages: g.pages.map((p,i)=>({
+        url:p.url, pos:p.pos, clicks:p.clicks, tag:p.tag,
+        dot: p.primary ? '#34d399' : '#fb923c',
+        rowStyle:`display:flex;align-items:center;gap:14px;padding:13px 20px;${i>0?'border-top:1px solid rgba(60,57,53,0.4)':''}`,
+        tagStyle:`font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;width:52px;text-align:center;${p.primary?'background:rgba(52,211,153,0.14);color:#6ee7b7':'background:rgba(251,146,60,0.14);color:#fdba74'}`,
+      })),
+    }));
+
+    // Decay
+    const decayRows = this.decay_data.map(d => {
+      const pct = ((d.curr-d.prev)/d.prev*100);
+      const up = pct>=0;
+      return {
+        query:d.query, page:d.page, prev:fmt(d.prev), curr:fmt(d.curr),
+        change:(up?'+':'')+pct.toFixed(1)+'%',
+        posDiff:d.posDiff, posColor:d.up?'#34d399':'#f87171',
+        changeStyle:`font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:7px;${up?'background:rgba(52,211,153,0.13);color:#34d399':'background:rgba(239,68,68,0.13);color:#f87171'}`,
+      };
+    });
+
+    // Chat
+    const chat = s.chat.map(m => {
+      const isAI = m.role==='ai';
+      return { text:m.text, isAI,
+        wrap:`display:flex;gap:12px;align-items:flex-start;${isAI?'':'flex-direction:row-reverse'}`,
+        bubble:`max-width:78%;padding:14px 17px;border-radius:16px;font-size:13px;line-height:1.6;${isAI?'background:rgba(42,41,39,0.7);border:1px solid rgba(60,57,53,0.8);color:#cdc7bd;border-top-left-radius:5px':'background:linear-gradient(135deg,#E1251A,#b01810);color:#fff;border-top-right-radius:5px'}`,
+      };
+    });
+
+    // Settings
+    const models = [['flash','Gemini 1.5 Flash'],['pro','Gemini 1.5 Pro'],['flash2','Gemini 2.0 Flash']].map(([id,label])=>{
+      const active = s.model===id;
+      return { label, onClick:()=>set('model',id),
+        style:`flex:1;padding:9px 8px;border-radius:9px;font-size:11px;font-weight:${active?600:500};cursor:pointer;transition:all .15s;border:1px solid ${active?'rgba(225,37,26,0.4)':'rgba(60,57,53,0.8)'};background:${active?'rgba(225,37,26,0.12)':'rgba(20,18,17,0.4)'};color:${active?'#ffb3ab':'#a8a199'}` };
+    });
+
+    const geminiSwitch = `width:44px;height:25px;flex:0 0 44px;border-radius:20px;border:none;cursor:pointer;position:relative;transition:all .2s;padding:0;background:${s.geminiOn?'linear-gradient(135deg,#E1251A,#b01810)':'rgba(78,74,70,0.9)'}`;
+    const geminiKnob = `position:absolute;top:3px;left:${s.geminiOn?'22px':'3px'};width:19px;height:19px;border-radius:50%;background:#fff;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.3)`;
+
+    return {
+      rootStyle:'display:flex;width:100%;height:100vh;background:radial-gradient(1200px 600px at 20% -10%,rgba(176,24,16,0.08),transparent),#1a1817;font-family:Inter,system-ui,sans-serif;color:#e9e4dd;overflow:hidden;-webkit-font-smoothing:antialiased',
+      contentKeyStyle:'min-height:100%;animation:ql-fade .3s ease',
+      nav, pageTitle, pageSub,
+      activeView:s.activeView, hasData:s.hasData,
+      rowCount: s.hasData ? '2.847' : '0', rowCountLabel: filtered.length+' fırsat gösteriliyor',
+      isDashboard:s.activeView==='dashboard', isExplorer:s.activeView==='explorer',
+      isCannibal:s.activeView==='cannibal', isDecay:s.activeView==='decay',
+      isAI:s.activeView==='ai', isSettings:s.activeView==='settings',
+      kpis, chartBars, oppDist,
+      rows, cols, filters, search:s.search, drawer:s.drawer,
+      cannibalGroups, decayRows, chat, models,
+      geminiOn:s.geminiOn, prompt:s.prompt,
+      minImpr:s.minImpr, sdLow:s.sdLow, sdHigh:s.sdHigh, apiKey:s.apiKey,
+      gscStatus: s.gscConnected ? 'Bağlı · seo-projesi.com' : 'Bağlı Değil',
+      gscColor: s.gscConnected ? '#34d399' : '#7e776c',
+      gscBtnLabel: s.gscConnected ? 'Bağlantıyı Kes' : 'Giriş Yap',
+      gscBtn:`padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid ${s.gscConnected?'rgba(239,68,68,0.3)':'rgba(96,165,250,0.35)'};background:${s.gscConnected?'rgba(239,68,68,0.08)':'rgba(96,165,250,0.1)'};color:${s.gscConnected?'#fca5a5':'#93c5fd'}`,
+      geminiStatus: s.geminiOn ? 'Etkin' : 'Devre Dışı',
+      geminiColor: s.geminiOn ? '#34d399' : '#7e776c',
+      geminiSwitch, geminiKnob,
+
+      // handlers
+      prevent:(e)=>e.preventDefault(),
+      simulateUpload:(e)=>{ if(e&&e.preventDefault)e.preventDefault(); this.setState({uploading:true}); setTimeout(()=>this.setState({hasData:true,uploading:false}),700); },
+      goExplorer:()=>this.setState({activeView:'explorer'}),
+      goAI:()=>this.setState({activeView:'ai',drawer:null}),
+      goSettings:()=>this.setState({activeView:'settings'}),
+      closeDrawer:()=>set('drawer',null),
+      onSearch:(e)=>set('search',e.target.value),
+      onPrompt:(e)=>set('prompt',e.target.value),
+      onPromptKey:(e)=>{ if(e.key==='Enter') this.sendPrompt(); },
+      sendPrompt:()=>this.sendPrompt(),
+      toggleGsc:()=>set('gscConnected',!s.gscConnected),
+      toggleGemini:()=>set('geminiOn',!s.geminiOn),
+      onMinImpr:(e)=>set('minImpr',+e.target.value),
+      onSdLow:(e)=>set('sdLow',+e.target.value),
+      onSdHigh:(e)=>set('sdHigh',+e.target.value),
+      onApiKey:(e)=>set('apiKey',e.target.value),
+    };
+  }
+
+  sendPrompt() {
+    const p = this.state.prompt.trim();
+    if(!p) return;
+    const replies = [
+      'Analiz ediyorum... Bu sorgu için en büyük fırsat, mevcut içeriğe güncel istatistikler ve karşılaştırma tablosu eklemek. Tahmini pozisyon kazancı: 2-3 sıra.',
+      'Rakip sayfalarının ortalama kelime sayısı 1.850 iken sizinki 920. İçeriği genişletip 3 alt başlık eklemenizi öneririm.',
+      'Bu sorgunun arama amacı "bilgilendirici". Bir "nasıl yapılır" bölümü ve adım adım görsel eklemek CTR\'yi %40\'a kadar artırabilir.',
+    ];
+    const reply = replies[Math.floor(Math.random()*replies.length)];
+    this.setState(st => ({ prompt:'', chat:[...st.chat, {role:'user',text:p}, {role:'ai',text:reply}] }));
+  }
+
+  componentDidMount(){ this.paintIcons(); }
+  componentDidUpdate(){ this.paintIcons(); }
+  paintIcons(){
+    const icons = {
+      grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+      target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+      split:'<path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3l-7.5 7.5a4 4 0 0 0-1.5 3.1V21"/><path d="M3 3l7.5 7.5"/>',
+      trend:'<path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/>',
+      spark:'<path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/>',
+      gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+      eye:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+      click:'<path d="M9 9l5 12 1.8-5.2L21 14z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>',
+      percent:'<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+      rank:'<path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/>',
+    };
+    const root = this._rootEl || (this._rootEl = document.querySelector('[data-viewkey]')?.closest('div'));
+    document.querySelectorAll('[data-icon]').forEach(el => {
+      const key = el.getAttribute('data-icon');
+      const svg = icons[key];
+      if(svg && el.getAttribute('data-painted')!==key){
+        el.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${svg}</svg>`;
+        el.setAttribute('data-painted',key);
+      }
+    });
+  }
+}
+</script>
+</body>
+</html>
