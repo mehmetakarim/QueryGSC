@@ -23,7 +23,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50Y2VzdGVkIGNvbW1lbnQ6IG1pYmlzaWduIHB1YmxpYyBrZXkAcW1sazduIHB1YmlzaWduIHB1YmxpYyBrZXk6IEUxRUIxNzVGN0RFTzc3QzQKUldURWQ1TjlYeGZyNGI5M0c0NUrNUXlMXJ3NY4MWpWQ1NTTTEhkUCt4MTRBazdaYUNOKditMM1FUUEsK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZGQjI2MzFBNTFCN0I2RDgKUldUWXRyZFJHbU95Lzl2TVlMUkcyOVZhSVQxcWVYdVI2NXpGRHhlVEJOVE5RTlZKSmhzdEdFUDAK",
       "endpoints": [
         "https://github.com/mehmetakarim/QueryGSC/releases/latest/download/latest-{{target}}-{{arch}}.json"
       ]
