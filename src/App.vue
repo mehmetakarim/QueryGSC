@@ -3,6 +3,8 @@ import { ref, computed, watch, onMounted } from "vue";
 import JSZip from "jszip";
 import { openUrl as openBrowser } from "@tauri-apps/plugin-opener";
 import { marked } from "marked";
+import { check } from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
 
 // Define Interfaces
 interface KPI {
@@ -102,10 +104,10 @@ const apiKey = ref(localStorage.getItem("gemini_api_key") || "");
 const model = ref("flash");
 
 // Auto-Updater State
-const currentVersion = "0.1.0";
-const githubRepo = ref("mehmetakarim/QueryGSC");
 const showUpdateModal = ref(false);
 const latestReleaseData = ref<{ version: string; body: string; url: string; assets: any[] } | null>(null);
+const updatingStatus = ref("");
+const activeUpdateObject = ref<any>(null);
 
 // File Metadata
 const currentFileName = ref("");
@@ -1030,49 +1032,48 @@ watch(gscClientId, (newVal) => {
   localStorage.setItem("gsc_client_id", newVal);
 });
 
-function isNewerVersion(current: string, latest: string): boolean {
-  const currParts = current.split(".").map(Number);
-  const lateParts = latest.split(".").map(Number);
-  for (let i = 0; i < Math.max(currParts.length, lateParts.length); i++) {
-    const currVal = currParts[i] || 0;
-    const lateVal = lateParts[i] || 0;
-    if (lateVal > currVal) return true;
-    if (lateVal < currVal) return false;
-  }
-  return false;
-}
+
 
 async function checkForUpdates() {
   try {
-    const res = await fetch(`https://api.github.com/repos/${githubRepo.value}/releases/latest`);
-    if (!res.ok) return;
-    const data = await res.json();
-    if (!data.tag_name) return;
-    const latestVersion = data.tag_name.replace("v", "").trim();
-    
-    if (isNewerVersion(currentVersion, latestVersion)) {
-      latestReleaseData.value = {
-        version: data.tag_name,
-        body: data.body || "",
-        url: data.html_url,
-        assets: data.assets || []
-      };
-      showUpdateModal.value = true;
+    if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
+      const update = await check();
+      if (update) {
+        latestReleaseData.value = {
+          version: update.version,
+          body: update.body || "Yeni bir güncelleme mevcut. Otomatik indirilip kurulacaktır.",
+          url: "",
+          assets: []
+        };
+        activeUpdateObject.value = update;
+        showUpdateModal.value = true;
+      }
     }
   } catch (err) {
     console.error("Güncelleme kontrolü başarısız:", err);
   }
 }
 
-
-
-function triggerUpdateInstall() {
-  if (latestReleaseData.value) {
+async function triggerUpdateInstall() {
+  if (activeUpdateObject.value) {
+    updatingStatus.value = "Güncelleme paketi arka planda indiriliyor ve kuruluyor. Lütfen bekleyin...";
     try {
-      openBrowser(latestReleaseData.value.url);
-    } catch (e) {
-      window.open(latestReleaseData.value.url, "_blank");
+      await activeUpdateObject.value.downloadAndInstall();
+      updatingStatus.value = "Yükleme tamamlandı! Uygulama yeniden başlatılıyor...";
+      setTimeout(async () => {
+        showUpdateModal.value = false;
+        updatingStatus.value = "";
+        await relaunch();
+      }, 1500);
+    } catch (err) {
+      console.error("Otomatik güncelleme başarısız:", err);
+      updatingStatus.value = "Güncelleme yüklenemedi. Lütfen uygulamayı manuel güncelleyin.";
+      setTimeout(() => {
+        showUpdateModal.value = false;
+        updatingStatus.value = "";
+      }, 2500);
     }
+  } else {
     showUpdateModal.value = false;
   }
 }
@@ -2523,19 +2524,27 @@ onMounted(() => {
               <span style="font-size: 11px; color: #ff6b5e; font-weight: 600;">Sürüm {{ latestReleaseData.version }}</span>
             </div>
           </div>
-          <!-- Body -->
-          <div style="padding: 24px; max-height: 280px; overflow-y: auto; color: var(--text-secondary); line-height: 1.6; font-size: 13px;">
-            <p style="margin-top: 0; font-weight: 600; color: var(--text-primary); margin-bottom: 12px;">QueryGSC için yeni bir güncelleme yayınlandı. Değişiklik ayrıntıları:</p>
-            <div class="markdown-body" v-html="renderMarkdown(latestReleaseData.body || 'Yenilikler belirtilmemiş.')"></div>
+          <!-- Body / Loading state -->
+          <div v-if="updatingStatus" style="padding: 40px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
+            <div class="spinner-neon" style="border: 3px solid rgba(225, 37, 26, 0.15); border-top: 3px solid #E1251A; border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite;"></div>
+            <p style="font-size: 13.5px; font-weight: 600; color: #ff6b5e; margin: 0; text-align: center; line-height: 1.5;">{{ updatingStatus }}</p>
           </div>
-          <!-- Footer -->
-          <div style="padding: 16px 24px; background: rgba(0,0,0,0.15); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px;">
-            <button @click="showUpdateModal = false" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
-              Daha Sonra
-            </button>
-            <button @click="triggerUpdateInstall" style="background: #E1251A; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
-              Şimdi Güncelle
-            </button>
+          
+          <div v-else style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+            <!-- Body -->
+            <div style="padding: 24px; max-height: 280px; overflow-y: auto; color: var(--text-secondary); line-height: 1.6; font-size: 13px;">
+              <p style="margin-top: 0; font-weight: 600; color: var(--text-primary); margin-bottom: 12px;">QueryGSC için yeni bir güncelleme yayınlandı. Değişiklik ayrıntıları:</p>
+              <div class="markdown-body" v-html="renderMarkdown(latestReleaseData.body || 'Yenilikler belirtilmemiş.')"></div>
+            </div>
+            <!-- Footer -->
+            <div style="padding: 16px 24px; background: rgba(0,0,0,0.15); border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px;">
+              <button @click="showUpdateModal = false" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
+                Daha Sonra
+              </button>
+              <button @click="triggerUpdateInstall" style="background: #E1251A; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
+                Şimdi Güncelle
+              </button>
+            </div>
           </div>
         </div>
       </div>

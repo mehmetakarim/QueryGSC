@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "QueryGSC",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "com.mehmetakar.querygsc",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -19,6 +19,14 @@
     ],
     "security": {
       "csp": null
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50Y2VzdGVkIGNvbW1lbnQ6IG1pYmlzaWduIHB1YmxpYyBrZXkAcW1sazduIHB1YmlzaWduIHB1YmxpYyBrZXk6IEUxRUIxNzVGN0RFTzc3QzQKUldURWQ1TjlYeGZyNGI5M0c0NUrNUXlMXJ3NY4MWpWQ1NTTTEhkUCt4MTRBazdaYUNOKditMM1FUUEsK",
+      "endpoints": [
+        "https://github.com/mehmetakarim/QueryGSC/releases/latest/download/latest-{{target}}-{{arch}}.json"
+      ]
     }
   },
   "bundle": {

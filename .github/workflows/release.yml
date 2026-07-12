@@ -5,42 +5,174 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
-  release:
-    permissions:
-      contents: write
+  build:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, windows-latest]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        include:
+          - platform: macos-latest
+            args: '--target aarch64-apple-darwin'
+          - platform: windows-latest
+            args: ''
 
-      - name: Setup Node.js
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node.js kur
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
-      - name: Install Rust
+      - name: Rust kur
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
-      - name: Rust cache
+      - name: Rust önbelleği
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Install dependencies (Node)
+      - name: npm bağımlılıkları yükle
         run: npm install
 
-      - name: Build frontend and Tauri app
+      - name: Tauri build
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'QueryGSC ${{ github.ref_name }}'
-          releaseBody: 'QueryGSC otomatik derleme sürümü.'
+          releaseBody: |
+            ## Kurulum
+
+            **macOS:** `.dmg` dosyasını indirin, uygulamayı Applications klasörüne sürükleyin.
+            İlk açılışta: Sağ tık → Aç (imzasız uygulama uyarısını geçmek için)
+
+            **Windows:** `.msi` dosyasını indirip çalıştırın.
           releaseDraft: false
           prerelease: false
+          args: ${{ matrix.args }}
+
+      # ── macOS: imzala ve manifest oluştur ──────────────────────────────────
+      - name: macOS güncelleme manifesti oluştur
+        if: matrix.platform == 'macos-latest'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+          PUB_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          BUNDLE_DIR="src-tauri/target/aarch64-apple-darwin/release/bundle/macos"
+          TAR_GZ="${BUNDLE_DIR}/QueryGSC.app.tar.gz"
+          SIG_FILE="${TAR_GZ}.sig"
+
+          # .app.tar.gz yoksa oluştur (genellikle tauri-action üretir)
+          if [ ! -f "$TAR_GZ" ]; then
+            echo "tar.gz bulunamadı, oluşturuluyor..."
+            tar -czf "$TAR_GZ" -C "$BUNDLE_DIR" "QueryGSC.app"
+          fi
+
+          # Private key'i geçici dosyaya yaz — --private-key-path base64 kodlu içerik bekler,
+          # TAURI_SIGNING_PRIVATE_KEY zaten base64 olduğu için decode etmiyoruz
+          printf '%s' "$TAURI_SIGNING_PRIVATE_KEY" > /tmp/tauri_key.key
+
+          # İmzala — TAURI_SIGNING_PRIVATE_KEY unset edilmeli, yoksa CLI
+          # env var'ı --private-key olarak görür ve --private-key-path ile çakışır
+          unset TAURI_SIGNING_PRIVATE_KEY
+          npm run tauri -- signer sign \
+            --private-key-path /tmp/tauri_key.key \
+            --password "" \
+            "$TAR_GZ"
+
+          rm -f /tmp/tauri_key.key
+
+          SIG=$(cat "$SIG_FILE")
+          URL="https://github.com/mehmetakarim/QueryGSC/releases/download/${TAG}/QueryGSC_aarch64.app.tar.gz"
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg pub_date "$PUB_DATE" \
+            --arg sig "$SIG" \
+            --arg url "$URL" \
+            '{"version":$version,"pub_date":$pub_date,"notes":"","platforms":{"darwin-aarch64":{"signature":$sig,"url":$url}}}' \
+            > latest-darwin-aarch64.json
+
+          gh release upload "$TAG" latest-darwin-aarch64.json --clobber
+          echo "macOS manifesti yüklendi: latest-darwin-aarch64.json"
+
+      # ── Windows: nsis setup.exe yükle ve manifest oluştur ─────────────────
+      - name: Windows güncelleme manifesti oluştur
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          $VERSION = node -p "require('./package.json').version"
+          $TAG = "v$VERSION"
+          $PUB_DATE = (Get-Date -AsUTC).ToString("yyyy-MM-ddTHH:mm:ssZ")
+
+          # Tauri v2 artık .nsis.zip değil doğrudan *-setup.exe üretiyor
+          $NSIS_EXE = Get-ChildItem -Path "src-tauri\target\release\bundle\nsis" `
+            -Filter "*-setup.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+
+          if (-not $NSIS_EXE) {
+            Write-Host "NSIS exe bulunamadi. Bundle dizini:"
+            Get-ChildItem -Path "src-tauri\target\release\bundle" -Recurse | Select-Object FullName
+            exit 0
+          }
+
+          # tauri-action@v0 Tauri v2'de .sig üretmiyor — manuel imzala
+          $KEY_PATH = "$env:TEMP\tauri_key.key"
+          [System.IO.File]::WriteAllText($KEY_PATH, $Env:TAURI_SIGNING_PRIVATE_KEY,
+            [System.Text.UTF8Encoding]::new($false))
+          $Env:TAURI_SIGNING_PRIVATE_KEY = $null
+          npm run tauri -- signer sign `
+            --private-key-path $KEY_PATH `
+            --password "" `
+            $NSIS_EXE.FullName
+          Remove-Item $KEY_PATH -Force
+
+          $SIG_PATH = "$($NSIS_EXE.FullName).sig"
+          if (-not (Test-Path $SIG_PATH)) {
+            Write-Host "NSIS sig hala bulunamadi: $SIG_PATH"
+            exit 1
+          }
+
+          $SIG = (Get-Content $SIG_PATH -Raw).Trim()
+          $URL = "https://github.com/mehmetakarim/QueryGSC/releases/download/$TAG/$($NSIS_EXE.Name)"
+
+          gh release upload $TAG $NSIS_EXE.FullName --clobber
+
+          $json = [ordered]@{
+            version  = $VERSION
+            pub_date = $PUB_DATE
+            notes    = ""
+            platforms = [ordered]@{
+              "windows-x86_64" = [ordered]@{
+                signature = $SIG
+                url       = $URL
+              }
+            }
+          } | ConvertTo-Json -Depth 5
+
+          [System.IO.File]::WriteAllText(
+            "latest-windows-x86_64.json", $json,
+            [System.Text.UTF8Encoding]::new($false)
+          )
+          gh release upload $TAG "latest-windows-x86_64.json" --clobber
+          Write-Host "Windows manifesti yuklendi."
