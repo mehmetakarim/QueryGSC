@@ -2424,6 +2424,7 @@ onMounted(() => {
                         2. Sol listenin en altındaki <b>"Input your own scopes"</b> kutusuna <code>https://www.googleapis.com/auth/webmasters.readonly</code> yapıştırın ve <b>Authorize APIs</b> butonuna tıklayın.<br />
                         3. Google hesabınızla giriş yapıp izin verdikten sonra Step 2 alanındaki <b>Exchange authorization code for tokens</b> butonuna tıklayın.<br />
                         4. Oluşan <code>access_token</code> değerini kopyalayıp yukarıdaki kutuya yapıştırın ve <b>Doğrula & Bağlan</b> deyin.<br />
+                        <span style="color: #ef4444; font-weight: 600; display: block; margin-top: 6px;">⚠️ Not: Google geçici Access Token jetonları tam 1 saat (60 dakika) geçerlidir. Süre dolunca hata alırsanız yukarıdaki adımlarla yeni bir token kopyalamanız gerekir.</span>
                         <button class="gsc-oauth-btn" @click="openBrowser('https://developers.google.com/oauthplayground')" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #60a5fa; padding: 0 10px; border-radius: 6px; font-weight: 500; font-size: 11px; cursor: pointer; height: 26px; margin-top: 8px;">
                           Tarayıcıda Google OAuth Playground'ı Aç
                         </button>
